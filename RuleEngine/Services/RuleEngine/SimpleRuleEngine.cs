@@ -1,5 +1,6 @@
 ﻿using RuleEngine.Model;
 using RuleEngine.Services.Rules;
+using RuleEngine.Utility;
 
 namespace RuleEngine.Services.RuleEngine
 {
@@ -23,15 +24,22 @@ namespace RuleEngine.Services.RuleEngine
             }
 
             // check trip wise expense rules
-            foreach (var tripRule in tripRules)
+            if (ExpenseUtility.areAllExpensesOfSameTrip(expenses))
             {
-                var violation = tripRule.Check(expenses);
-                if(violation != null)
+                foreach (var tripRule in tripRules)
                 {
-                    violations.Add(violation);
-                }   
+                    var violation = tripRule.Check(expenses);
+                    if (violation != null)
+                    {
+                        violations.Add(violation);
+                    }
+                }
             }
-            
+            else
+            {
+                violations.Add(new Violation("All expenses should be of the same trip"));
+            }
+
             return violations;
         }
 
